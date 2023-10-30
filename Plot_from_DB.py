@@ -1,10 +1,10 @@
 import plotly.graph_objects as go
 import sqlite3
 import numpy as np
+import pandas as pd
 from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox
-import os
 import plotly
 import plotly.express as px
 
@@ -60,41 +60,22 @@ def get_movement_readings(connection, cursor, Target_name):
         messagebox.showerror("Error: ", str(e))
     return dates, readings
 
+
 def plot_H(Target_name, dates, H_vector, horizontal_trigger_levels, construction_start_date):
     fig = go.Figure()
-    dates1 = []
-    dates2 = []
-    points1 = None
-    points2 = None
-    for i,d in enumerate(dates):
-        if d < construction_start_date:
-            dates1.append(str(d.day) + " / " + str(d.month) + " / " + str(d.year))
-            if points1 is None:
-                points1 = H_vector[i]
-            else:
-                points1 = np.vstack((points1,H_vector[i]))
-        else:
-            dates2.append(str(d.day) + " / " + str(d.month) + " / " + str(d.year))
-            if points2 is None:
-                points2 = H_vector[i]
-            else:
-                points2 = np.vstack((points2,H_vector[i]))
-    # Use plotly to plot all the points       
-    try:
-        scatter1 = go.Scatter(x=points1[:,0], y= points1[:,1], mode='markers',hovertext=(dates1),marker=dict(size=10,color='blue'), name = "Before Grubbing Out")
-        fig.add_trace(scatter1)
-    except TypeError:
-        pass
-    try:
-        scatter2 = go.Scatter(x=points2[:,0], y= points2[:,1],mode='markers',hovertext=(dates2),marker=dict(size=10,color='red'), name = "After Grubbing Out")
-        fig.add_trace(scatter2)
-    except TypeError:
-        pass
+    start_date = min(dates)
+    end_date = max(dates)
+    x = H_vector [:,0]
+    y = H_vector [0:,1]
+    data = pd.DataFrame ({'date':dates, 'x':x, 'y':y})
+    data['color'] = data['date'].apply(lambda d: 'Before significant construction works' if d<construction_start_date else 'After significant construction works')
+    fig = px.scatter(data, x='x', y='y', color='color', color_discrete_map={'Before significant construction works': 'black', 'After significant construction works': 'red'})
     fig.add_shape(type = "circle", xref = "x", yref = "y", x0 = horizontal_trigger_levels[0]*-1, y0 = horizontal_trigger_levels[0]*-1, x1 = horizontal_trigger_levels[0], y1 = horizontal_trigger_levels[0], line_color = "orange")
     fig.add_shape(type = "circle", xref = "x", yref = "y", x0 = horizontal_trigger_levels[1]*-1, y0 = horizontal_trigger_levels[1]*-1, x1 = horizontal_trigger_levels[1], y1 = horizontal_trigger_levels[1], line_color = "red")
     fig.update_layout(title=go.layout.Title(text = Target_name +"<br><sup>Trigger Levels[Amber, Red] = " + str(horizontal_trigger_levels) +"<sup>"))
     fig.update_yaxes(scaleanchor="x",    scaleratio=1 )
-    plotly.offline.plot(fig, filename = f"{Target_name} - horizontal movements.html")
+    plotly.offline.plot(fig, filename = f"{Target_name} - horizontal movements.html")    
+    return fig, data
 
 def plot_horizontal_movements(Target_name, db_name, construction_start_date):
     connection, cursor = Connect(db_name)

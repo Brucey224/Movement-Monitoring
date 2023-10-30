@@ -18,7 +18,6 @@ db_name = "Targets.db"
 ## PRELIMINARIES - GET INPUT FROM USER
 Target_name = simpledialog.askstring("Input", "Target to query")
 construction_start_date = datetime(2023,4,1)
-
 # create the database containing reference data: includes:
 #                           - Target Labels 
 #                           - reference coords
