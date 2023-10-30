@@ -31,7 +31,6 @@ def get_records_folder():
 def scan_files(path, connection, cursor):
     files=0
     for file in os.listdir(path):
-        print(file)
         file_name,file_ext = os.path.splitext(file)
         if file_ext == '.csv':
             files+=1

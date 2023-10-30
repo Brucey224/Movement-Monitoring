@@ -1,7 +1,6 @@
 from Create_DB import Create_DB
 from Import_readings import Import_readings
-from Plot_from_DB import plot_horizontal_movements
-
+from Plot_from_DB import plot_to_html
 from datetime import datetime
 import tkinter as tk
 from tkinter import simpledialog
@@ -14,7 +13,6 @@ window.withdraw()
 
 # Database named by default
 db_name = "Targets.db"
-
 ## PRELIMINARIES - GET INPUT FROM USER
 Target_name = simpledialog.askstring("Input", "Target to query")
 construction_start_date = datetime(2023,4,1)
@@ -31,5 +29,5 @@ Create_DB(db_name)
 Import_readings(db_name)
 
 # 3. Plot Horizontal movements using plotly
-plot_horizontal_movements(Target_name, db_name, construction_start_date)
+plot_to_html(Target_name, db_name, construction_start_date)
 
