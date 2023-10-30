@@ -25,7 +25,7 @@ construction_start_date = datetime(2023,4,1)
 #                           - trigger levels  
 window.quit()                                                    
 
-## 1. Create Database that includes all reference info for Targets (origin & Trigger levels)
+## 1. Create Database thaSOt includes all reference info for Targets (origin & Trigger levels)
 Create_DB(db_name)
 
 # 2. Import all movement readings for dates that have not yet been input into database
